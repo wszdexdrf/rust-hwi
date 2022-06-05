@@ -330,4 +330,22 @@ impl HWIClient {
             Ok(())
         })
     }
+
+    /// Creates a backup of the device
+    /// # Arguments
+    /// * `label` - The label to apply to the newly setup device
+    /// * `backup_passphrase` - The passphrase to use for the backup, if backups are encrypted for that device
+    pub fn backup_device(&self, label: &str, backup_passphrase: &str) -> Result<(), Error> {
+        Python::with_gil(|py| {
+            let func_args = (&self.hw_client, label, backup_passphrase);
+            let output = self
+                .hwilib
+                .commands
+                .getattr(py, "backup_device")?
+                .call1(py, func_args)?;
+            let output = self.hwilib.json_dumps.call1(py, (output,))?;
+            let status: HWIStatus = deserialize_obj!(&output.to_string())?;
+            status.into()
+        })
+    }
 }

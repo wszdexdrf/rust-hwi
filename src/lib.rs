@@ -227,4 +227,11 @@ mod tests {
         HWIClient::set_log_level(types::LogLevel::DEBUG).unwrap();
         test_enumerate();
     }
+
+    #[test]
+    #[serial]
+    #[ignore]
+    fn test_backup_device() {
+        get_first_device().backup_device("", "").unwrap();
+    }
 }
